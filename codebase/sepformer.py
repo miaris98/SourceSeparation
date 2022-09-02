@@ -53,8 +53,8 @@ def main():
     torchaudio.save("sepformer1.wav", est_sources_sep[:, :, 0].detach().cpu(), 8000)
     torchaudio.save("sepformer2.wav", est_sources_sep[:, :, 1].detach().cpu(), 8000)
 
-    ConvTasNet.separate(train_set.df.values[0][2], force_overwrite=True)
-    DPRNNTasNet.separate(train_set.df.values[0][2], force_overwrite=True)
+    ConvTasNet.separate(train_set.df.values[0][2], output_dir="C:\\Users\\miari\\Desktop\\repositories\\SourceSeparation\\codebase\\ConvTasNet" , force_overwrite=True)
+    DPRNNTasNet.separate(train_set.df.values[0][2],output_dir="C:\\Users\\miari\\Desktop\\repositories\\SourceSeparation\\codebase\\DPRNNTasNet" ,  force_overwrite=True)
     print("")
    # Awais.separate("Awais-mixture.wav", force_overwrite=True)
 
