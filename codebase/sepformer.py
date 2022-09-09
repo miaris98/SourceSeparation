@@ -38,11 +38,21 @@ def main():
 
     est1 = sf.read("ConvTasNet/5400-34479-0005_4973-24515-0007_est1.wav")[0]
     est2 = sf.read("ConvTasNet/5400-34479-0005_4973-24515-0007_est2.wav")[0]
+
     fig, ax = plt.subplots(1, 2, figsize=(15, 5))
     show_magspec(est1, sr=8000, ax=ax[0])
     show_magspec(est2, sr=8000, ax=ax[1])
     plt.show()
 
+    anechoic_sampled_mixture, _ = torchaudio.load("ConvTasNet/5400-34479-0005_4973-24515-0007_est1.wav")
+    waveform = anechoic_sampled_mixture.detach().numpy()[0]
+    plt.plot(waveform)
+    plt.title("Anechoic Mixture")
+    plt.show()
+    plt.close()
+    plt.specgram(waveform)
+    display(Audio(waveform, rate=8000))
+    plt.show()
 def show_magspec(waveform, **kw):
     return librosa.display.specshow(
         librosa.amplitude_to_db(np.abs(librosa.stft(waveform))),
