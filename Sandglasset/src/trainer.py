@@ -1,16 +1,17 @@
 import os
 import time
 import torch
-from src.pit_criterion import cal_loss
+from Sandglasset.src.pit_criterion import cal_loss
 from torch.utils.tensorboard import SummaryWriter
 import gc
-
+import torchaudio
 
 class Trainer(object):
     def __init__(self, data, model, optimizer, config):
-
-        self.tr_loader = data["tr_loader"]
-        self.cv_loader = data["cv_loader"]
+        self.tr_loader = data["Train_set"]
+        self.cv_loader = data["Eval_set"]
+        #self.tr_loader = data["tr_loader"]
+        #self.cv_loader = data["cv_loader"]
         self.model = model
         self.optimizer = optimizer
 
@@ -170,11 +171,11 @@ class Trainer(object):
 
         total_loss = 0
         data_loader = self.tr_loader if not cross_valid else self.cv_loader  # 数据集切换
-
+        # waveform, sample_rate = torchaudio.load(data_loader.dataset.df.values[0][2])
         for i, (data) in enumerate(data_loader):
-
-            padded_mixture, mixture_lengths, padded_source = data
-
+            padded_mixture, mixture_lengths , padded_source = data # dataset has the structure of [0] = 'unamed' , [1] = 'mixid',[2] = mixpath , [4] = s1 ,[5] = s2 [6] = length
+            # padded source is a dictionary / array of 2 sources?  padmix=data_loader.dataset.df.values[0][2]
+            #test first without loops as
             # 是否使用 GPU 训练
             if torch.cuda.is_available():
                 padded_mixture = padded_mixture.cuda()

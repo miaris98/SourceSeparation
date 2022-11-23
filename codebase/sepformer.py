@@ -20,7 +20,9 @@ def main():
     #print(train_set.df.values[799][2]) # path mix
     #print(train_set.df.values[799][3]) # path s1
     #print(train_set.df.values[799][4]) # path s2
+
     print(train_set.df.values[0][2])
+    torchaudio.save(train_set.df.values[0][2])
 
     sepformer = separator.from_hparams(source="speechbrain/sepformer-wsj02mix",
                                    savedir='pretrained_models/sepformer-wsj02mix')
@@ -44,6 +46,7 @@ def main():
     show_magspec(est2, sr=8000, ax=ax[1])
     plt.show()
 
+
     anechoic_sampled_mixture, _ = torchaudio.load("ConvTasNet/5400-34479-0005_4973-24515-0007_est1.wav")
     waveform = anechoic_sampled_mixture.detach().numpy()[0]
     plt.plot(waveform)
@@ -53,6 +56,7 @@ def main():
     plt.specgram(waveform)
     display(Audio(waveform, rate=8000))
     plt.show()
+
 def show_magspec(waveform, **kw):
     return librosa.display.specshow(
         librosa.amplitude_to_db(np.abs(librosa.stft(waveform))),

@@ -2,22 +2,22 @@ import argparse
 import torch
 from dataset.data import AudioDataLoader, AudioDataset
 from src.trainer import Trainer
-from model.conv_tasnet import ConvTasNet
-from model.dual_path_rnn import Dual_RNN_model
-from model.dptnet import DPTNet
-from model.sepformer import Sepformer
-from model.sudormrf import SuDORMRF
-from model.galr import GALR
+#from model.conv_tasnet import ConvTasNet
+#from model.dual_path_rnn import Dual_RNN_model
+#from model.dptnet import DPTNet
+#from model.sepformer import Sepformer
+#from model.sudormrf import SuDORMRF
+#from model.galr import GALR
 from model.sandglasset import Sandglasset
 import json5
 import numpy as np
 from adamp import AdamP, SGDP
-
+from asteroid.data import LibriMix
 
 def main(config):
     torch.manual_seed(config["seed"])
     np.random.seed(config["seed"])
-
+    """
     # 数据
     tr_dataset = AudioDataset(json_dir=config["train_dataset"]["train_dir"],  # 目录下包含 mix.json, s1.json, s2.json
                               batch_size=config["train_dataset"]["batch_size"],
@@ -39,14 +39,24 @@ def main(config):
                                 batch_size=config["validation_loader"]["batch_size"],
                                 shuffle=config["validation_loader"]["shuffle"],
                                 num_workers=config["validation_loader"]["num_workers"])
+    """
+#TODO : AudioDataset transfer , data.py
 
-    data = {"tr_loader": tr_loader, "cv_loader": cv_loader}
+    train_loader, val_loader = LibriMix.loaders_from_mini(
+    task='sep_clean', batch_size=1)
+
+    train_set, val_set = LibriMix.mini_from_download(task='sep_clean')
+    #download from minilibrimix?
+
+    #data = {"tr_loader": tr_loader, "cv_loader": cv_loader}
+    data = {"tr_loader": train_loader, "cv_loader": val_loader}
+    Raw_Data={"Train_set": train_set , "Eval_set":val_set}
 
     # 模型
     if config["model"]["type"] == "sandglasset":
         model = Sandglasset(in_channels=config["model"]["sandglasset"]["in_channels"],
                             out_channels=config["model"]["sandglasset"]["out_channels"],
-                            kernel_size=config["model"]["galr"]["kernel_size"],
+                            kernel_size=config["model"]["sandglasset"]["kernel_size"], #model_type was galr
                             length=config["model"]["sandglasset"]["length"],
                             hidden_channels=config["model"]["sandglasset"]["hidden_channels"],
                             num_layers=config["model"]["sandglasset"]["num_layers"],
@@ -91,8 +101,8 @@ def main(config):
         print("Not support optimizer")
         return
 
-    trainer = Trainer(data, model, optimize, config)
-
+    #trainer = Trainer(data, model, optimize, config)
+    trainer = Trainer(Raw_Data, model, optimize, config)
     trainer.train()
 
 
